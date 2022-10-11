@@ -65,7 +65,7 @@ struct ReorderingVStackTest: View {
 ### LazyVGrid
 
 ```swift
-struct ReorderingVStackTest: View {
+struct ReorderingVGridTest: View {
   @State private var data = ["Apple", "Orange", "Banana", "Lemon", "Tangerine"]
   @State private var allowReordering = false
   
@@ -74,18 +74,22 @@ struct ReorderingVStackTest: View {
       Toggle("Allow reordering", isOn: $allowReordering)
         .frame(width: 200)
         .padding(.bottom, 30)
-      VStack {
+      LazyVGrid(columns: [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+      ]) {
         ReorderableForEach($data, allowReordering: $allowReordering) { item, isDragged in
           Text(item)
             .font(.title)
             .padding()
-            .frame(minWidth: 200, minHeight: 50)
+            .frame(minWidth: 150, minHeight: 50)
             .border(Color.blue)
             .background(Color.red.opacity(0.9))
             .overlay(isDragged ? Color.white.opacity(0.6) : Color.clear)
         }
       }
     }
+    .padding()
   }
 }
 ```
