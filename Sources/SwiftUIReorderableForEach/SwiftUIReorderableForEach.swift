@@ -6,23 +6,28 @@ where Data : Hashable, Content : View {
     
     
     
-    // TODO: accept a NSManagedObjectContext 
+    // TODO: optionally accept a NSManagedObjectContext
     
     @Binding var data: [Data]
     
     
     
     @Binding var allowReordering: Bool
+    
+    let context: NSManagedObjectContext? // MARK: new, wip, optional
+
     private let content: (Data, Bool) -> Content
     
     @State private var draggedItem: Data?
     @State private var hasChangedLocation: Bool = false
     
-    public init(_ data: Binding<[Data]>,
-                allowReordering: Binding<Bool>,
-                @ViewBuilder content: @escaping (Data, Bool) -> Content) {
+    
+    public init (_ data: Binding<[Data]>, allowReordering: Binding<Bool>, context: NSManagedObjectContext? = nil, @ViewBuilder content: @escaping (Data, Bool) -> Content) {
         _data = data
         _allowReordering = allowReordering
+        
+        self.context = context // MARK: new, wip, optional
+        
         self.content = content
     }
     
@@ -68,7 +73,18 @@ where Data : Hashable, Content : View {
                     data.move(fromOffsets: IndexSet(integer: from),
                               toOffset: (to > from) ? to + 1 : to)
                 }
+                
+                print("dropEntered() - items: \(data.count)")
+                print("dropEntered() - item : \(draggedItem)")
+                print("dropEntered() - from : \(from)")
+                print("dropEntered() - to   : \(to)\n")
+                
+                // TODO: move CoreData indices
+
+                // TODO: save CoreData context
+                
             }
+            
         }
         
         func dropUpdated(info: DropInfo) -> DropProposal? {
@@ -82,6 +98,8 @@ where Data : Hashable, Content : View {
         }
     }
 }
+
+// MARK: tests
 
 struct ReorderingVStackTest: View {
     @State private var data = ["Apple", "Orange", "Banana", "Lemon", "Tangerine"]
