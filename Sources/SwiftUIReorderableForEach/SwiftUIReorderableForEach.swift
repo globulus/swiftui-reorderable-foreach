@@ -6,7 +6,7 @@ where Data : Hashable, Content : View {
     
     
     
-    // TODO: fix "Cannot convert value of type 'Binding<FetchRequest<Preset>.Configuration>' to expected argument type 'Binding<[Data]>'" in calling view
+    // TODO: accept a NSManagedObjectContext 
     
     @Binding var data: [Data]
     
