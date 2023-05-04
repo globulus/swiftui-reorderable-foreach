@@ -79,6 +79,8 @@ where Data : Hashable, Content : View {
                 print("dropEntered() - from : \(from)")
                 print("dropEntered() - to   : \(to)\n")
                 
+                // TODO: update CoreData sortIndex
+                
                 // TODO: move CoreData indices
 
                 // TODO: save CoreData context
