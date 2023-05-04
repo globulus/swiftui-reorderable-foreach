@@ -3,7 +3,15 @@ import UniformTypeIdentifiers
 
 public struct ReorderableForEach<Data, Content>: View
 where Data : Hashable, Content : View {
+    
+    
+    
+    // TODO: fix "Cannot convert value of type 'Binding<FetchRequest<Preset>.Configuration>' to expected argument type 'Binding<[Data]>'" in calling view
+    
     @Binding var data: [Data]
+    
+    
+    
     @Binding var allowReordering: Bool
     private let content: (Data, Bool) -> Content
     
