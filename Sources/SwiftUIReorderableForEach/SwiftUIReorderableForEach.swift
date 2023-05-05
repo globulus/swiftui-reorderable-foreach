@@ -40,7 +40,11 @@ where Data : Hashable, Content : View {
                         return NSItemProvider(object: "\(item.hashValue)" as NSString)
                     }
                     .onDrop(of: [UTType.plainText], delegate: DragRelocateDelegate(
+                        
                         item: item,
+                        
+                        context: context, // MARK: new, optional
+                        
                         data: $data,
                         draggedItem: $draggedItem,
                         hasChangedLocation: $hasChangedLocation))
@@ -53,6 +57,8 @@ where Data : Hashable, Content : View {
     struct DragRelocateDelegate<Data>: DropDelegate
     where Data : Equatable {
         let item: Data
+        let context: NSManagedObjectContext? // MARK: new, wip, optional
+
         @Binding var data: [Data]
         @Binding var draggedItem: Data?
         @Binding var hasChangedLocation: Bool
@@ -74,16 +80,26 @@ where Data : Hashable, Content : View {
                               toOffset: (to > from) ? to + 1 : to)
                 }
                 
-                print("dropEntered() - items: \(data.count)")
-                print("dropEntered() - item : \(draggedItem)")
-                print("dropEntered() - from : \(from)")
-                print("dropEntered() - to   : \(to)\n")
                 
-                // TODO: update CoreData sortIndex
                 
-                // TODO: move CoreData indices
-
-                // TODO: save CoreData context
+                // MARK: we have a context, so update CoreData items and, finally, context!
+                
+                if let context = context {
+                    print("dropEntered() - items: \(data.count)")
+                    print("dropEntered() - item : \(draggedItem)")
+                    print("dropEntered() - from : \(from)")
+                    print("dropEntered() - to   : \(to)\n")
+                    
+                    // TODO: update CoreData sortIndex
+                    
+                    // TODO: move CoreData indices
+                    
+                    // TODO: save CoreData context
+                }
+                
+                //
+                
+                
                 
             }
             
