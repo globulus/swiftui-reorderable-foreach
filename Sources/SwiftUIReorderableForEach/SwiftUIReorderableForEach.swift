@@ -65,8 +65,15 @@ where Data : Hashable, Content : View {
                 // support for CoreData
                 if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
                     // swap indices
-                    draggedItem.setValue(to, forKey: "sortIndex")
-                    item.setValue(from, forKey: "sortIndex")
+                    
+                    let draggedItemIndex = draggedItem.value(forKey: "sortIndex")
+                    let itemIndex = item.value(forKey: "sortIndex")
+
+//                    draggedItem.setValue(to, forKey: "sortIndex")
+//                    item.setValue(from, forKey: "sortIndex")
+                    
+                    draggedItem.setValue(itemIndex, forKey: "sortIndex")
+                    item.setValue(draggedItemIndex, forKey: "sortIndex")
    
                     // save context
                     if context.hasChanges {
