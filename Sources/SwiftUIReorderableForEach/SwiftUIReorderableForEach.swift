@@ -6,7 +6,7 @@ where Data : Hashable, Content : View {
     @Binding var data: [Data]
     @Binding var allowReordering: Bool
     
-    let context: NSManagedObjectContext? // MARK: WIP
+    let context: NSManagedObjectContext? // optional, passing a context enables CoreData support
 
     private let content: (Data, Bool) -> Content
     
@@ -17,7 +17,7 @@ where Data : Hashable, Content : View {
         _data = data
         _allowReordering = allowReordering
         
-        self.context = context // MARK: WIP
+        self.context = context
         self.content = content
     }
     
@@ -31,7 +31,7 @@ where Data : Hashable, Content : View {
                     }
                     .onDrop(of: [UTType.plainText], delegate: DragRelocateDelegate(
                         item: item,
-                        context: context, // MARK: WIP
+                        context: context,
                         data: $data,
                         draggedItem: $draggedItem,
                         hasChangedLocation: $hasChangedLocation))
@@ -44,7 +44,7 @@ where Data : Hashable, Content : View {
     struct DragRelocateDelegate<Data>: DropDelegate
     where Data : Equatable {
         let item: Data
-        let context: NSManagedObjectContext? // MARK: WIP
+        let context: NSManagedObjectContext?
 
         @Binding var data: [Data]
         @Binding var draggedItem: Data?
@@ -62,38 +62,20 @@ where Data : Hashable, Content : View {
             hasChangedLocation = true
             
             if data[to] != current {
-                // in case we got a CoreData context in our arguments, persist indexing
+                // support for CoreData
                 if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
-                    // handle indices
-                    print("dropEntered() - items      : \(data.count)")
-                    print("dropEntered() - draggedItem: \(draggedItem.value(forKey: "title"))")
-                    print("dropEntered() - item       : \(item.value(forKey: "title"))")
-                    print("dropEntered() - from       : \(from)")
-                    print("dropEntered() - to         : \(to)\n")
-                    
-                    print("dropEntered() - draggedItem.sortIndex -> \(draggedItem.value(forKey: "sortIndex"))")
-                    print("dropEntered() - item.sortIndex -> \(item.value(forKey: "sortIndex"))")
-
+                    // swap indices
                     draggedItem.setValue(to, forKey: "sortIndex")
                     item.setValue(from, forKey: "sortIndex")
-                    
-                    print("dropEntered() - changed sortIndexes")
-                    print("dropEntered() - draggedItem.sortIndex -> \(draggedItem.value(forKey: "sortIndex"))")
-                    print("dropEntered() - item.sortIndex -> \(item.value(forKey: "sortIndex"))\n")
-                                    
-                    // persist through context save (if needed)
+   
+                    // save context
                     if context.hasChanges {
-                        do {
-                            try context.save()
-                        } catch {
-                            print("dropEntered() - context save error")
-                        }
-                    } else {
-                        print("dropEntered() - context has no changes, skipping save")
+                        do { try context.save() }
+                        catch { }
                     }
                 }
                 
-                // handle UI indices
+                // handle indices
                 withAnimation {
                     data.move(fromOffsets: IndexSet(integer: from),
                               toOffset: (to > from) ? to + 1 : to)
