@@ -80,6 +80,9 @@ where Data : Hashable, Content : View {
                 // MARK: we have a context, so update CoreData items and, finally, context!
                 
                 if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
+                    
+                    // TODO: need to check whether all items have a sortIndex, not sure where to do this yet, but important WIP
+                    
                     print("dropEntered() - items      : \(data.count)")
                     print("dropEntered() - draggedItem: \(draggedItem.value(forKey: "title"))")
                     print("dropEntered() - item       : \(item.value(forKey: "title"))")
@@ -88,9 +91,29 @@ where Data : Hashable, Content : View {
                     
                     // TODO: update CoreData sortIndex
                     
-                    // TODO: move CoreData indices
+                    print("dropEntered() - draggedItem.sortIndex -> \(draggedItem.value(forKey: "sortIndex"))")
+                    print("dropEntered() - item.sortIndex -> \(item.value(forKey: "sortIndex"))")
+
+                    draggedItem.setValue(to, forKey: "sortIndex")
+                    item.setValue(from, forKey: "sortIndex")
+                    
+                    print("dropEntered() - changed sortIndexes")
+                    print("dropEntered() - draggedItem.sortIndex -> \(draggedItem.value(forKey: "sortIndex"))")
+                    print("dropEntered() - item.sortIndex -> \(item.value(forKey: "sortIndex"))\n")
                     
                     // TODO: save CoreData context
+                    
+                    if context.hasChanges {
+                        do {
+                            try context.save()
+                            
+                            print("dropEntered() - saved context")
+                        } catch {
+                            print("dropEntered() - context save error")
+                        }
+                    } else {
+                        print("dropEntered() - context has no changes, skipping save")
+                    }
                 }
                 
                 //
