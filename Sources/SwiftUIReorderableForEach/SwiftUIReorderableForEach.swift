@@ -69,7 +69,8 @@ where Data : Hashable, Content : View {
                 }
                 
                 // support for CoreData
-                if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
+//                if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
+                if let context = context, let data = data as? [NSManagedObject]  {
                                         
                     // handle CD indices
                     
@@ -83,7 +84,7 @@ where Data : Hashable, Content : View {
 //                    item.setValue(draggedItemIndex, forKey: "sortIndex")
                     
                     // MARK: new code
-                    if let data = data as? [NSManagedObject] {
+//                    if let data = data as? [NSManagedObject] {
                         var index = 0
                         
                         for preset in data {
@@ -91,7 +92,7 @@ where Data : Hashable, Content : View {
                             
                             index += 1
                         }
-                    }
+//                    }
    
                     // save context
                     if context.hasChanges {
