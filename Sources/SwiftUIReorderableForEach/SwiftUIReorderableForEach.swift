@@ -6,8 +6,8 @@ where Data : Hashable, Content : View {
     @Binding var data: [Data]
     @Binding var allowReordering: Bool
     
-    let context: NSManagedObjectContext? // optional, passing a context enables CoreData support
-
+    let context: NSManagedObjectContext? // optional, passing context enables CoreData support, requires an attribute 'sortIndex' in  CD model
+    
     private let content: (Data, Bool) -> Content
     
     @State private var draggedItem: Data?
@@ -64,14 +64,10 @@ where Data : Hashable, Content : View {
             if data[to] != current {
                 // support for CoreData
                 if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
-                    // swap indices
-                    
+                    // handle CD indices
                     let draggedItemIndex = draggedItem.value(forKey: "sortIndex")
                     let itemIndex = item.value(forKey: "sortIndex")
 
-//                    draggedItem.setValue(to, forKey: "sortIndex")
-//                    item.setValue(from, forKey: "sortIndex")
-                    
                     draggedItem.setValue(itemIndex, forKey: "sortIndex")
                     item.setValue(draggedItemIndex, forKey: "sortIndex")
    
@@ -82,7 +78,7 @@ where Data : Hashable, Content : View {
                     }
                 }
                 
-                // handle indices
+                // handle UI indices
                 withAnimation {
                     data.move(fromOffsets: IndexSet(integer: from),
                               toOffset: (to > from) ? to + 1 : to)
