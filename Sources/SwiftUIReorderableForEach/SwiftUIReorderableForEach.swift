@@ -75,20 +75,16 @@ where Data : Hashable, Content : View {
             hasChangedLocation = true
             
             if data[to] != current {
-                withAnimation {
-                    data.move(fromOffsets: IndexSet(integer: from),
-                              toOffset: (to > from) ? to + 1 : to)
-                }
-                
                 
                 
                 // MARK: we have a context, so update CoreData items and, finally, context!
                 
-                if let context = context {
-                    print("dropEntered() - items: \(data.count)")
-                    print("dropEntered() - item : \(draggedItem)")
-                    print("dropEntered() - from : \(from)")
-                    print("dropEntered() - to   : \(to)\n")
+                if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
+                    print("dropEntered() - items      : \(data.count)")
+                    print("dropEntered() - draggedItem: \(draggedItem.value(forKey: "title"))")
+                    print("dropEntered() - item       : \(item.value(forKey: "title"))")
+                    print("dropEntered() - from       : \(from)")
+                    print("dropEntered() - to         : \(to)\n")
                     
                     // TODO: update CoreData sortIndex
                     
@@ -98,6 +94,19 @@ where Data : Hashable, Content : View {
                 }
                 
                 //
+                
+                
+                
+                // MARK: now update records themselves
+                
+                withAnimation {
+                    data.move(fromOffsets: IndexSet(integer: from),
+                              toOffset: (to > from) ? to + 1 : to)
+                }
+                
+                
+                
+
                 
                 
                 
