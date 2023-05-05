@@ -62,8 +62,17 @@ where Data : Hashable, Content : View {
             hasChangedLocation = true
             
             if data[to] != current {
+                // handle UI indices
+                withAnimation {
+                    data.move(fromOffsets: IndexSet(integer: from),
+                              toOffset: (to > from) ? to + 1 : to)
+                }
+                
                 // support for CoreData
                 if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
+                    
+                    // TODO: fast movements can cause CD indices to get mixed up, use UI indices instead
+                    
                     // handle CD indices
                     let draggedItemIndex = draggedItem.value(forKey: "sortIndex")
                     let itemIndex = item.value(forKey: "sortIndex")
@@ -76,12 +85,6 @@ where Data : Hashable, Content : View {
                         do { try context.save() }
                         catch { }
                     }
-                }
-                
-                // handle UI indices
-                withAnimation {
-                    data.move(fromOffsets: IndexSet(integer: from),
-                              toOffset: (to > from) ? to + 1 : to)
                 }
             }
         }
