@@ -17,6 +17,7 @@ This package contains a generic **ReoderableForEach** component, which can then 
 * Works with any SwiftUI layout.
 * Binding to dynamically enable/disable reordering functionality.
 * Custom item rendering with additional info on if the current item is being dragged or not.
+* Support for updating a CoreData attribute named "sortIndex" in case an (optional) argument 'context' is passed (preferably the viewContext)
 
 ## Installation
 
