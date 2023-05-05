@@ -68,33 +68,15 @@ where Data : Hashable, Content : View {
                               toOffset: (to > from) ? to + 1 : to)
                 }
                 
-                // support for CoreData
-//                if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
+                // support for CoreData (rewrite all sortIndex' in order of UI appearance)
                 if let context = context, let data = data as? [NSManagedObject]  {
-                                        
-                    // handle CD indices
-                    
-                    // TODO: fast movements can cause CD indices to get mixed up, use UI indices instead
-
-                    // MARK: old code
-//                    let draggedItemIndex = draggedItem.value(forKey: "sortIndex")
-//                    let itemIndex = item.value(forKey: "sortIndex")
-//
-//                    draggedItem.setValue(itemIndex, forKey: "sortIndex")
-//                    item.setValue(draggedItemIndex, forKey: "sortIndex")
-                    
-                    // MARK: new code
-//                    if let data = data as? [NSManagedObject] {
                         var index = 0
                         
                         for preset in data {
                             preset.setValue(index, forKey: "sortIndex")
-                            
                             index += 1
                         }
-//                    }
    
-                    // save context
                     if context.hasChanges {
                         do { try context.save() }
                         catch { }
