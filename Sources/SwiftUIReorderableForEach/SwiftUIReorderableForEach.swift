@@ -3,31 +3,21 @@ import UniformTypeIdentifiers
 
 public struct ReorderableForEach<Data, Content>: View
 where Data : Hashable, Content : View {
-    
-    
-    
-    // TODO: optionally accept a NSManagedObjectContext
-    
     @Binding var data: [Data]
-    
-    
-    
     @Binding var allowReordering: Bool
     
-    let context: NSManagedObjectContext? // MARK: new, wip, optional
+    let context: NSManagedObjectContext? // MARK: WIP
 
     private let content: (Data, Bool) -> Content
     
     @State private var draggedItem: Data?
     @State private var hasChangedLocation: Bool = false
     
-    
     public init (_ data: Binding<[Data]>, allowReordering: Binding<Bool>, context: NSManagedObjectContext? = nil, @ViewBuilder content: @escaping (Data, Bool) -> Content) {
         _data = data
         _allowReordering = allowReordering
         
-        self.context = context // MARK: new, wip, optional
-        
+        self.context = context // MARK: WIP
         self.content = content
     }
     
@@ -40,11 +30,8 @@ where Data : Hashable, Content : View {
                         return NSItemProvider(object: "\(item.hashValue)" as NSString)
                     }
                     .onDrop(of: [UTType.plainText], delegate: DragRelocateDelegate(
-                        
                         item: item,
-                        
-                        context: context, // MARK: new, optional
-                        
+                        context: context, // MARK: WIP
                         data: $data,
                         draggedItem: $draggedItem,
                         hasChangedLocation: $hasChangedLocation))
@@ -57,7 +44,7 @@ where Data : Hashable, Content : View {
     struct DragRelocateDelegate<Data>: DropDelegate
     where Data : Equatable {
         let item: Data
-        let context: NSManagedObjectContext? // MARK: new, wip, optional
+        let context: NSManagedObjectContext? // MARK: WIP
 
         @Binding var data: [Data]
         @Binding var draggedItem: Data?
@@ -75,21 +62,14 @@ where Data : Hashable, Content : View {
             hasChangedLocation = true
             
             if data[to] != current {
-                
-                
-                // MARK: we have a context, so update CoreData items and, finally, context!
-                
+                // in case we got a CoreData context in our arguments, persist indexing
                 if let context = context, let draggedItem = draggedItem as? NSManagedObject, let item = item as? NSManagedObject {
-                    
-                    // TODO: need to check whether all items have a sortIndex, not sure where to do this yet, but important WIP
-                    
+                    // handle indices
                     print("dropEntered() - items      : \(data.count)")
                     print("dropEntered() - draggedItem: \(draggedItem.value(forKey: "title"))")
                     print("dropEntered() - item       : \(item.value(forKey: "title"))")
                     print("dropEntered() - from       : \(from)")
                     print("dropEntered() - to         : \(to)\n")
-                    
-                    // TODO: update CoreData sortIndex
                     
                     print("dropEntered() - draggedItem.sortIndex -> \(draggedItem.value(forKey: "sortIndex"))")
                     print("dropEntered() - item.sortIndex -> \(item.value(forKey: "sortIndex"))")
@@ -100,14 +80,11 @@ where Data : Hashable, Content : View {
                     print("dropEntered() - changed sortIndexes")
                     print("dropEntered() - draggedItem.sortIndex -> \(draggedItem.value(forKey: "sortIndex"))")
                     print("dropEntered() - item.sortIndex -> \(item.value(forKey: "sortIndex"))\n")
-                    
-                    // TODO: save CoreData context
-                    
+                                    
+                    // persist through context save (if needed)
                     if context.hasChanges {
                         do {
                             try context.save()
-                            
-                            print("dropEntered() - saved context")
                         } catch {
                             print("dropEntered() - context save error")
                         }
@@ -116,25 +93,12 @@ where Data : Hashable, Content : View {
                     }
                 }
                 
-                //
-                
-                
-                
-                // MARK: now update records themselves
-                
+                // handle UI indices
                 withAnimation {
                     data.move(fromOffsets: IndexSet(integer: from),
                               toOffset: (to > from) ? to + 1 : to)
                 }
-                
-                
-                
-
-                
-                
-                
             }
-            
         }
         
         func dropUpdated(info: DropInfo) -> DropProposal? {
